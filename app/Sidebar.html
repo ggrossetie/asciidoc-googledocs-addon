@@ -39,11 +39,11 @@
   <form>
     <div class="block form-group">
       <label for="translated-text"><b>AsciiDoc</b></label>
-      <textarea class="width-100" id="translated-text" rows="10"></textarea>
+      <textarea class="width-100" id="asciidocified-text" rows="10"></textarea>
     </div>
 
    <div class="block" id="button-bar">
-      <button class="blue" id="run-translation">Generate</button>
+      <button class="blue" id="run-generate">Generate</button>
     </div>
   </form>
 </div>
@@ -51,27 +51,22 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
 </script>
 <script>
-  /**
-   * On document load, assign click handlers to each button and try to load the
-   * user's origin and destination language preferences if previously set.
-   */
   $(function() {
-    $('#run-translation').click(runTranslation);
+    $('#run-generate').click(exportAsciiDoc);
   });
 
 
   /**
-   * Runs a server-side function to translate the user-selected text and update
-   * the sidebar UI with the resulting translation.
+   * Runs a server-side function to generate AsciiDoc
    */
-  function runTranslation() {
+  function exportAsciiDoc() {
     this.disabled = true;
     $('#error').remove();
 
     google.script.run
         .withSuccessHandler(
           function(asciidoc, element) {
-            $('#translated-text').val(asciidoc);
+            $('#asciidocified-text').val(asciidoc);
             element.disabled = false;
           })
         .withFailureHandler(
@@ -80,7 +75,7 @@
             element.disabled = false;
           })
         .withUserObject(this)
-        .myFunction();
+        .asciidocify();
   }
 
   /**
