@@ -26,22 +26,40 @@ function showSidebar() {
 function asciidocify() {
   var body = DocumentApp.getActiveDocument().getBody();
   var numChildren = body.getNumChildren();
-  var paragraphs = body.getParagraphs();
   var asciidoc = '';
+  var insideCodeBlock = false;
   for (var i = 0 ; i < numChildren; i++) {
     var child = body.getChild(i);
-    if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
-      asciidoc = asciidoc + asciidocHandleTitle(child);
-      asciidoc = asciidoc + asciidocHandleText(child);
-      if (i + 1 < numChildren && !isEmptyText(child)) {
-        var nextChild = body.getChild(i + 1);
-        if (nextChild.getType() == DocumentApp.ElementType.PARAGRAPH && !isEmptyText(nextChild)) {
-          // Keep paragraph
-          asciidoc = asciidoc + " +";
+    // Handle code block
+    var isCurrentCode = isTextCode(child.editAsText());
+    if (!insideCodeBlock) {
+      if (isCurrentCode) {
+        if (i + 1 < numChildren) {
+          var isNextChildCode = isTextCode(body.getChild(i + 1).editAsText());
+          if (isNextChildCode) {
+            // Start code block
+            asciidoc = asciidoc + '----\n';
+            insideCodeBlock = true;
+          }
         }
       }
-    } else {
+    }
+    if (insideCodeBlock) {
       asciidoc = asciidoc + child.getText();
+      if (i + 1 < numChildren) {
+        var isNextChildCode = isTextCode(body.getChild(i + 1).editAsText());
+        if (!isNextChildCode) {
+          // End code block
+          asciidoc = asciidoc + '\n----';
+          insideCodeBlock = false;
+        }
+      } else {
+        // End code block
+        asciidoc = asciidoc + '\n----';
+        insideCodeBlock = false;
+      }
+    } else {
+      asciidoc = asciidoc + asciidocHandleChild(child, i, numChildren, body);
     }
     asciidoc = asciidoc + '\n';
   }
@@ -50,6 +68,30 @@ function asciidocify() {
 
 function isEmptyText(child) {
   return child.getText().replace(/^\s+|\s+$/g, '').length == 0;
+}
+
+function asciidocHandleChild(child, i, numChildren, body) {
+  var result = '';
+  if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
+    result = result + asciidocHandleTitle(child);
+    result = result + asciidocHandleText(child);
+    if (i + 1 < numChildren && !isEmptyText(child)) {
+      var nextChild = body.getChild(i + 1);
+      if (nextChild.getType() == DocumentApp.ElementType.PARAGRAPH && !isEmptyText(nextChild)) {
+        // Keep paragraph
+        if (nextChild.getHeading() == DocumentApp.ParagraphHeading.NORMAL) {
+          result = result + ' +';
+        } else {
+          result = result + '\n';
+        }
+      }
+    }
+  } else if (child.getType() == DocumentApp.ElementType.TABLE) {
+    result = result + asciidocHandleTable(child);
+  } else {
+    result = result + child.getText();
+  }
+  return result;
 }
 
 function asciidocHandleText(child) {
@@ -72,24 +114,27 @@ function asciidocHandleText(child) {
   return result;
 }
 
-
 function asciidocHandleFontStyle(text, offset, distinctContent) {
   var result = '';
   var numOccurence = (distinctContent.length > 1 ? 1 : 2) + 1;
   var isBold = text.isBold(offset);
   var isItalic = text.isItalic(offset);
   var isUnderline = text.isUnderline(offset);
-  var isPlain = !isBold && !isItalic && !isUnderline
+  var isPlain = !isBold && !isItalic && !isUnderline;
+  var isCode = isTextCode(text);
   // Prefix markup
   if (isUnderline) {
     // Underline doesn't play nice with others
-    result = result + "+++<u>";
+    result = result + '+++<u>';
   } else {
     if (isBold) {
-      result = result + Array(numOccurence).join("*");
+      result = result + new Array(numOccurence).join('*');
     }
     if (isItalic) {
-      result = result + Array(numOccurence).join("_");
+      result = result + new Array(numOccurence).join('_');
+    }
+    if (isCode) {
+      result = result + '+';
     }
   }
   // Content
@@ -97,13 +142,16 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   // Suffix markup
   if (!isUnderline) {
     if (isItalic) {
-      result = result + Array(numOccurence).join("_");
+      result = result + new Array(numOccurence).join('_');
     }
     if (isBold) {
-      result = result + Array(numOccurence).join("*");
+      result = result + new Array(numOccurence).join('*');
+    }
+    if (isCode) {
+      result = result + '+';
     }
   } else {
-    result = result + "</u>+++";
+    result = result + '</u>+++';
   }
   return result;
 }
@@ -111,19 +159,48 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
 function asciidocHandleTitle(child) {
   var result = '';
   if (child.getHeading() == DocumentApp.ParagraphHeading.TITLE) {
-    result = "= " + child.getText();
+    result = '= ' + child.getText();
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING1) {
-    result = "== " + child.getText();
+    result = '== ' + child.getText();
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING2) {
-    result = "=== " + child.getText();
+    result = '=== ' + child.getText();
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING3) {
-    result = "==== " + child.getText();
+    result = '==== ' + child.getText();
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING4) {
-    result = "===== " + child.getText();
+    result = '===== ' + child.getText();
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING5) {
-    result =  "====== " + child.getText();
+    result =  '====== ' + child.getText();
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING6) {
-    result = "======= " + child.getText();
+    result = '======= ' + child.getText();
   }
   return result;
+}
+
+function asciidocHandleTable(child) {
+  var result = '';
+  if (child.getType() == DocumentApp.ElementType.TABLE) {
+    var numRows = child.getNumRows();
+    if (numRows > 0) {
+      result = result + '|===\n';
+      for (var rowIndex = 0; rowIndex < numRows; rowIndex++) {
+        var tableRow = child.getRow(rowIndex);
+        var numCells = tableRow.getNumCells();
+        for (var cellIndex = 0; cellIndex < numCells; cellIndex++) {
+          var tableCell = tableRow.getCell(cellIndex);
+          result = result + '|';
+          result = result + asciidocHandleChild(tableCell.getChild(0));
+        }
+        if (rowIndex == 0) {
+          result = result + '\n';
+        }
+        result = result + '\n';
+      }
+      result = result + '|===';
+    }
+  }
+  return result;
+}
+
+function isTextCode(text) {
+  return text.getFontFamily() == DocumentApp.FontFamily.CONSOLAS || text.getFontFamily() == DocumentApp.FontFamily.COURIER_NEW;
 }
