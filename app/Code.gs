@@ -3,7 +3,8 @@
  */
 function onOpen() {
   DocumentApp.getUi().createAddonMenu()
-      .addItem('Start', 'showSidebar')
+      .addItem('Convert all', 'showDialogConvertAll')
+      .addItem('Convert selection', 'showDialogConvertSelection')
       .addToUi();
 }
 
@@ -14,40 +15,66 @@ function onInstall() {
   onOpen();
 }
 
+function showDialogConvertAll() {
+  CacheService.getPrivateCache().put('convertMode', 'all');
+  showDialog();
+}
+
+function showDialogConvertSelection() {
+  CacheService.getPrivateCache().put('convertMode', 'selection');
+  showDialog();
+}
+
 /**
- * Opens a sidebar in the document containing the add-on's user interface.
+ * Opens a dialog containing the add-on's user interface.
  */
-function showSidebar() {
-  var ui = HtmlService.createHtmlOutputFromFile('Sidebar')
-      .setTitle('AsciiDoc Export');
-  DocumentApp.getUi().showSidebar(ui);
+function showDialog() {
+  var ui = HtmlService.createHtmlOutputFromFile('Dialog')
+      .setWidth(400)
+      .setHeight(500)
+      .setTitle('AsciiDoc Converter');
+
+  DocumentApp.getUi().showModalDialog(ui, 'AsciiDoc Converter');
 }
 
 function asciidocify() {
-  var body = DocumentApp.getActiveDocument().getBody();
-  var numChildren = body.getNumChildren();
+  var selection = DocumentApp.getActiveDocument().getSelection();
+  var elements = [];
+  if (selection && 'selection' == CacheService.getPrivateCache().get('convertMode')) {
+    var rangeElements = selection.getRangeElements();
+    for (var i = 0; i < rangeElements.length; i++) {
+      elements.push(rangeElements[i].getElement());
+    }
+  } else {
+    var body = DocumentApp.getActiveDocument().getBody();
+    for (var i = 0; i < body.getNumChildren(); i++) {
+      elements.push(body.getChild(i));
+    }
+  }
   var asciidoc = '';
   var insideCodeBlock = false;
-  for (var i = 0 ; i < numChildren; i++) {
-    var child = body.getChild(i);
+  var elementsLength = elements.length;
+  for (var i = 0 ; i < elementsLength; i++) {
+    var child = elements[i];
+    var nextChild = undefined;
+    if (i + 1 < elementsLength) {
+      var nextChild = elements[i + 1];
+    }
     // Handle code block
     var isCurrentCode = isTextCode(child.editAsText());
     if (!insideCodeBlock) {
       if (isCurrentCode) {
-        if (i + 1 < numChildren) {
-          var isNextChildCode = isTextCode(body.getChild(i + 1).editAsText());
-          if (isNextChildCode) {
-            // Start code block
-            asciidoc = asciidoc + '----\n';
-            insideCodeBlock = true;
-          }
+        if (typeof nextChild !== 'undefined' && isTextCode(nextChild.editAsText())) {
+          // Start code block
+          asciidoc = asciidoc + '----\n';
+          insideCodeBlock = true;
         }
       }
     }
     if (insideCodeBlock) {
       asciidoc = asciidoc + child.getText();
-      if (i + 1 < numChildren) {
-        var isNextChildCode = isTextCode(body.getChild(i + 1).editAsText());
+      if (typeof nextChild !== 'undefined') {
+        var isNextChildCode = isTextCode(nextChild.editAsText());
         if (!isNextChildCode) {
           // End code block
           asciidoc = asciidoc + '\n----';
@@ -59,7 +86,7 @@ function asciidocify() {
         insideCodeBlock = false;
       }
     } else {
-      asciidoc = asciidoc + asciidocHandleChild(child, i, numChildren, body);
+      asciidoc = asciidoc + asciidocHandleChild(child, i, nextChild);
     }
     asciidoc = asciidoc + '\n';
   }
@@ -70,13 +97,12 @@ function isEmptyText(child) {
   return child.getText().replace(/^\s+|\s+$/g, '').length == 0;
 }
 
-function asciidocHandleChild(child, i, numChildren, body) {
+function asciidocHandleChild(child, i, nextChild) {
   var result = '';
   if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
     result = result + asciidocHandleTitle(child);
     result = result + asciidocHandleText(child);
-    if (i + 1 < numChildren && !isEmptyText(child)) {
-      var nextChild = body.getChild(i + 1);
+    if (typeof nextChild !== 'undefined' && !isEmptyText(child)) {
       if (nextChild.getType() == DocumentApp.ElementType.PARAGRAPH && !isEmptyText(nextChild)) {
         // Keep paragraph
         if (nextChild.getHeading() == DocumentApp.ParagraphHeading.NORMAL) {

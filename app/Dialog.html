@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css">
+<style>
+.asciidocified-area {
+  width: 100%;
+  height: 470px;
+  max-height: 470px;
+}
+.hide {
+  display:none;
+}
+#spinner {
+  height: 19px;
+  width: 19px;
+}
+.alert-info {
+  background-color: white;
+  border-color: #BBBBBB;
+  color: #5C5C5C;
+}
+</style>
+
+<div>
+    <div id="progress-panel" class="alert alert-info" role="alert">
+        <img id="spinner" src="https://www.googledrive.com/host/0B1rPjnFlfglqZzk2Qkk3X05fOVk/spinner_tiny.gif"/> <span id="progress-message">Converting...</span> 
+    </div>
+
+    <div>
+        <textarea class="asciidocified-area hide" id="asciidocified-text" rows="20"></textarea>
+    </div>
+    <div id="error-message" class="error-message">&nbsp;</div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+</script>
+<script>
+  /**
+   * Runs a server-side function to generate AsciiDoc
+   */
+  function convertAsciiDoc() {
+    google.script.run
+        .withSuccessHandler(
+          function(asciidoc) {
+            $('#asciidocified-area').attr('rows', rows);
+            $('#asciidocified-text').removeClass('hide');
+            $('#asciidocified-text').val(asciidoc);
+            $('#progress-panel').hide();
+          })
+        .withFailureHandler(
+          function(msg) {
+            $('#progress-panel').removeClass('alert-info');
+            $('#progress-panel').addClass('alert-danger');
+            $('#spinner').hide();
+            $('#progress-message').html('<b>Error!</b><br/>' + msg);
+          })
+        .withUserObject(this)
+        .asciidocify();
+  }
+
+  convertAsciiDoc();
+</script>
