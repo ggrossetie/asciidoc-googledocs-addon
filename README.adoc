@@ -1,24 +1,29 @@
-= Google Docs import/export from/to AsciiDoc Add-on
+= AsciiDoc Processor Add-on for Google Docs&trade;
+Guillaume Grossetie
+:webstore: https://chrome.google.com/webstore/detail/asciidoc-processor/eghlmnhjljbjodpeehjjcgfcjegcfbhk
 
-Export and import Google Docs to/from AsciiDoc
+Convert your Google Docs&trade; into AsciiDoc.
+
+image::https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_206x58.png[link="{webstore}"]
 
 == Usage
 
-The Add-on is not yet published on the Chrome Web Store.
-To use it, you will need to follow these simple steps :
+ 1. Install extension from {webstore}[Chrome Web Store]
+ 1. Open a document or create a new one
+ 1. Under the *Add-ons* menu, click *AsciiDoc Processor > Convert all* to convert the entire document into AsciiDoc.
+ 1. Copy and paste the AsciiDoc output anywhere you want!
 
- 1. Create a https://drive.google.com/document[new Google Doc]
- 1. From within your new document, select the menu item **Tools > Script editor**. If you are presented with a welcome screen, click **Blank Project**.
- 1. Delete any code in the script editor and paste in https://raw.github.com/Mogztter/asciidoc-googledocs-import-export/master/app/Code.gs[this code].
- 1. Create a new file by selecting the menu item *File > New > Html file*. Name the file "Sidebar".
- 1. Delete any code in the new editor tab and paste in https://raw.github.com/Mogztter/asciidoc-googledocs-import-export/master/app/Sidebar.html[this code].
- 1. Select the menu item *File > Save all*. Name your new script "AsciiDoc Export" and click OK (The script's name is shown to end users in several places, including the authorization dialog.)
- 
-=== Try it out
+NOTE: To convert a part of your document, select some text and click *AsciiDoc Processor > Convert selection*
 
- 1. Switch back to your document and reload the page.
- 1. After a few seconds, a AsciiDoc Export sub-menu will appear under the *Add-ons* menu. (If you chose a different name for your script, that name will appear instead.) Click *Add-ons > AsciiDoc Export > Start*.
- 1. A dialog box will appear and tell you that the script requires authorization. Click *Continue*. A second dialog box will then request authorization for specific Google services. Read the notice carefully, then click *Accept*.
- 1. A sidebar will appear. To test it, type some text into your document, then click the blue Generate button.
- 1. Enjoy!
- 
+== Supported text formats
+
+This Add-on supports the following text formats :
+
+ * Headings
+ * Bold, italic, underline
+ * Tables
+ * Code bloc
+
+== Help
+
+If you discover errors or ommisions in the source code or documentation, please don't hesitate to https://github.com/asciidoctor/asciidoctor/issues[submit an issue or open a pull request with a fix].
