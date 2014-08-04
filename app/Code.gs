@@ -32,9 +32,9 @@ function showDialog() {
   var ui = HtmlService.createHtmlOutputFromFile('Dialog')
       .setWidth(400)
       .setHeight(500)
-      .setTitle('AsciiDoc Converter');
+      .setTitle('AsciiDoc Processor');
 
-  DocumentApp.getUi().showModalDialog(ui, 'AsciiDoc Converter');
+  DocumentApp.getUi().showModalDialog(ui, 'AsciiDoc Processor');
 }
 
 function asciidocify() {
