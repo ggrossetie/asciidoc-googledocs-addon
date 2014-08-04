@@ -116,6 +116,8 @@ function asciidocHandleChild(child, i, nextChild) {
     }
   } else if (child.getType() == DocumentApp.ElementType.TABLE) {
     result = result + asciidocHandleTable(child);
+  } else if (child.getType() == DocumentApp.ElementType.LIST_ITEM) {
+    result = result + asciidocHandleList(child);
   } else {
     result = result + child.getText();
   }
@@ -124,7 +126,7 @@ function asciidocHandleChild(child, i, nextChild) {
 
 function asciidocHandleText(child) {
   var result = '';
-  if (child.getHeading() == DocumentApp.ParagraphHeading.NORMAL) {
+  if (child.getType() == DocumentApp.ElementType.TEXT || child.getHeading() == DocumentApp.ParagraphHeading.NORMAL) {
     var text = child.editAsText();
     var textAttributeIndices = text.getTextAttributeIndices();
     var content = child.getText();
@@ -225,6 +227,27 @@ function asciidocHandleTable(child) {
       }
       result = result + '|===';
     }
+  }
+  return result;
+}
+
+function asciidocHandleList(child) {
+  var result = '';
+  var listSize = child.getNumChildren();
+  if (listSize == 1) {
+    result = asciidocHandleText(child.getChild(0));
+    var listSyntax;
+    if (child.getGlyphType() == DocumentApp.GlyphType.BULLET
+        || child.getGlyphType() == DocumentApp.GlyphType.HOLLOW_BULLET
+        || child.getGlyphType() == DocumentApp.GlyphType.SQUARE_BULLET) {
+      listSyntax = new Array(child.getNestingLevel() + 2).join('*');
+    } else {
+      listSyntax = new Array(child.getNestingLevel() + 2).join('.');
+    }
+    result = ' ' + listSyntax + ' ' + result;
+  } else {
+    // Should never happen?
+    result = child.getText();
   }
   return result;
 }
