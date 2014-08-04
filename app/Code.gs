@@ -102,14 +102,16 @@ function asciidocHandleChild(child, i, nextChild) {
   if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
     result = result + asciidocHandleTitle(child);
     result = result + asciidocHandleText(child);
-    if (typeof nextChild !== 'undefined' && !isEmptyText(child)) {
-      if (nextChild.getType() == DocumentApp.ElementType.PARAGRAPH && !isEmptyText(nextChild)) {
-        // Keep paragraph
-        if (nextChild.getHeading() == DocumentApp.ParagraphHeading.NORMAL) {
-          result = result + ' +';
-        } else {
-          result = result + '\n';
-        }
+    if (child.getHeading() == DocumentApp.ParagraphHeading.NORMAL
+        && !isEmptyText(child)
+        && typeof nextChild !== 'undefined'
+        && nextChild.getType() == DocumentApp.ElementType.PARAGRAPH
+        && !isEmptyText(nextChild)) {
+      // Keep paragraph
+      if (nextChild.getHeading() == DocumentApp.ParagraphHeading.NORMAL) {
+        result = result + ' +';
+      } else {
+        result = result + '\n';
       }
     }
   } else if (child.getType() == DocumentApp.ElementType.TABLE) {
