@@ -58,7 +58,7 @@ function asciidocify() {
     var child = elements[i];
     var nextChild = undefined;
     if (i + 1 < elementsLength) {
-      var nextChild = elements[i + 1];
+      nextChild = elements[i + 1];
     }
     // Handle code block
     var isCurrentCode = isTextCode(child.editAsText());
@@ -188,20 +188,24 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
 
 function asciidocHandleTitle(child) {
   var result = '';
+  var headingLevel;
   if (child.getHeading() == DocumentApp.ParagraphHeading.TITLE) {
-    result = '= ' + child.getText();
+    headingLevel = 1;
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING1) {
-    result = '== ' + child.getText();
+    headingLevel = 2;
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING2) {
-    result = '=== ' + child.getText();
+    headingLevel = 3;
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING3) {
-    result = '==== ' + child.getText();
+    headingLevel = 4;
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING4) {
-    result = '===== ' + child.getText();
+    headingLevel = 5;
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING5) {
-    result =  '====== ' + child.getText();
+    headingLevel = 6;
   } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING6) {
-    result = '======= ' + child.getText();
+    headingLevel = 7;
+  }
+  if (typeof headingLevel !== 'undefined') {
+    result = new Array(headingLevel + 1).join('=') + ' ' + child.getText();
   }
   return result;
 }
