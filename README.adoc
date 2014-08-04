@@ -23,6 +23,7 @@ This Add-on supports the following text formats :
  * Bold, italic, underline
  * Tables
  * Code bloc
+ * Lists (unordered and ordered)
 
 == Help
 
