@@ -270,5 +270,5 @@ function isTextCode(text) {
   // Last Try: Assume it's mono if it ends with ' Mono'.
   // This works for all Google Fonts as of 2016-10-21.
   // See ES6 String.prototype.endsWith(str, pos).
-  return fontFamily.indexOf(' Mono') === fontFamily.length;
+  return fontFamily.indexOf(' Mono') === fontFamily.length - 5;
 }
