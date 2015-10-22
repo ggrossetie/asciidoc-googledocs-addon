@@ -150,38 +150,44 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   var isBold = text.isBold(offset);
   var isItalic = text.isItalic(offset);
   var isUnderline = text.isUnderline(offset);
-  var isPlain = !isBold && !isItalic && !isUnderline;
+  var isStrikethrough = text.isStrikethrough(offset);
+  // var isPlain = ! (isBold || isItalic || isUnderline || isStrikethrough);
+  // FIXME: getTextAttributeIndices doesn't split on different fonts,
+  // makeing this almost useless
   var isCode = isTextCode(text);
   // Prefix markup
   if (isUnderline) {
-    // Underline doesn't play nice with others
-    result = result + '+++<u>';
-  } else {
-    if (isBold) {
-      result = result + new Array(numOccurence).join('*');
-    }
-    if (isItalic) {
-      result = result + new Array(numOccurence).join('_');
-    }
-    if (isCode) {
-      result = result + '+';
-    }
+    result += '+++<u>+++'; // or asciidoc.css class: underline
+  }
+  if (isStrikethrough) {
+    result += '+++<s>+++'; // or asciidoc.css class: line-through
+  }
+  if (isBold) {
+    result = result + new Array(numOccurence).join('*');
+  }
+  if (isItalic) {
+    result = result + new Array(numOccurence).join('_');
+  }
+  if (isCode) {
+    result = result + '+';
   }
   // Content
-  result = result + distinctContent;
+  result += distinctContent;
   // Suffix markup
-  if (!isUnderline) {
-    if (isItalic) {
-      result = result + new Array(numOccurence).join('_');
-    }
-    if (isBold) {
-      result = result + new Array(numOccurence).join('*');
-    }
-    if (isCode) {
-      result = result + '+';
-    }
-  } else {
-    result = result + '</u>+++';
+  if (isCode) {
+    result = result + '+';
+  }
+  if (isItalic) {
+    result = result + new Array(numOccurence).join('_');
+  }
+  if (isBold) {
+    result = result + new Array(numOccurence).join('*');
+  }
+  if (isStrikethrough) {
+    result += '+++</s>+++';
+  }
+  if (isUnderline) {
+	  result += '+++</u>+++'
   }
   return result;
 }
