@@ -151,7 +151,6 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   var isItalic = text.isItalic(offset);
   var isUnderline = text.isUnderline(offset);
   var isStrikethrough = text.isStrikethrough(offset);
-  // var isPlain = ! (isBold || isItalic || isUnderline || isStrikethrough);
   // FIXME: getTextAttributeIndices doesn't split on different fonts,
   // makeing this almost useless
   var isCode = isTextCode(text);
