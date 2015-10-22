@@ -151,15 +151,20 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   var isItalic = text.isItalic(offset);
   var isUnderline = text.isUnderline(offset);
   var isStrikethrough = text.isStrikethrough(offset);
+  var htmlBuf = ''
   // FIXME: getTextAttributeIndices doesn't split on different fonts,
   // makeing this almost useless
   var isCode = isTextCode(text);
   // Prefix markup
   if (isUnderline) {
-    result += '+++<u>+++'; // or asciidoc.css class: underline
+    htmlBuf += '<u>'; // or asciidoc.css class: underline
   }
   if (isStrikethrough) {
-    result += '+++<s>+++'; // or asciidoc.css class: line-through
+    htmlBuf += '<s>'; // or asciidoc.css class: line-through
+  }
+  if (htmlBuf !== '') {
+  	result += '+++' + htmlBuf + '+++';
+  	htmlBuf = '';
   }
   if (isBold) {
     result = result + new Array(numOccurence).join('*');
@@ -183,12 +188,12 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
     result = result + new Array(numOccurence).join('*');
   }
   if (isStrikethrough) {
-    result += '+++</s>+++';
+    htmlBuf += '</s>';
   }
   if (isUnderline) {
-	  result += '+++</u>+++'
+	  htmlBuf += '</u>';
   }
-  return result;
+  return htmlBuf !== '' ? result + '+++' + htmlBuf + '+++' : result;
 }
 
 function asciidocHandleTitle(child) {
