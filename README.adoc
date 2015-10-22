@@ -27,4 +27,4 @@ This Add-on supports the following text formats :
 
 == Help
 
-If you discover errors or ommisions in the source code or documentation, please don't hesitate to https://github.com/asciidoctor/asciidoctor/issues[submit an issue or open a pull request with a fix].
+If you discover errors or ommisions in the source code or documentation, please don't hesitate to https://github.com/Mogztter/asciidoc-googledocs-addon/issues[submit an issue or open a pull request with a fix].
