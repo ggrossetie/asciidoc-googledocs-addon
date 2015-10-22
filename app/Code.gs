@@ -261,6 +261,9 @@ function isTextCode(text) {
   // Things will be better if Google Fonts can tell us about a font
   var i, fontFamily = text.getFontFamily(), /* Now it returns a string! */
   monospaceFonts = ['Consolas', 'Courier New', 'Source Code Pro'];
+  if (fontFamily === null) {
+    return false; // Handle null early.. It means multil=ple values.
+  }
   // See ES7 Array.prototype.includes(elem, pos)
   for (i = 0; i < monospaceFonts.length; i++) {
     if (fontFamily === monospaceFonts[i]) {
