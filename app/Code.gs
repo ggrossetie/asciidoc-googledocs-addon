@@ -163,8 +163,8 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
     htmlBuf += '<s>'; // or asciidoc.css class: line-through
   }
   if (htmlBuf !== '') {
-  	result += '+++' + htmlBuf + '+++';
-  	htmlBuf = '';
+    result += '+++' + htmlBuf + '+++';
+    htmlBuf = '';
   }
   if (isBold) {
     result = result + new Array(numOccurence).join('*');
@@ -191,9 +191,12 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
     htmlBuf += '</s>';
   }
   if (isUnderline) {
-	  htmlBuf += '</u>';
+    htmlBuf += '</u>';
   }
-  return htmlBuf !== '' ? result + '+++' + htmlBuf + '+++' : result;
+  if (htmlBuf !== '') {
+    result += '+++' + htmlBuf + '+++';
+  }
+  return result;
 }
 
 function asciidocHandleTitle(child) {
