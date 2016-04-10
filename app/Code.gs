@@ -218,7 +218,7 @@ function asciidocHandleTitle(child) {
     headingLevel = 7;
   }
   if (typeof headingLevel !== 'undefined') {
-    result = new Array(headingLevel + 1).join('=') + ' ' + child.getText();
+    result = new Array(headingLevel + 1).join('=') + ' ' + child.getText() + '\n';
   }
   return result;
 }
