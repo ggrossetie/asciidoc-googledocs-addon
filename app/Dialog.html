@@ -42,7 +42,6 @@
     google.script.run
         .withSuccessHandler(
           function(asciidoc) {
-            $('#asciidocified-area').attr('rows', rows);
             $('#asciidocified-text').removeClass('hide');
             $('#asciidocified-text').val(asciidoc);
             $('#progress-panel').hide();
