@@ -24,6 +24,38 @@ This Add-on supports the following text formats :
  * Tables
  * Code bloc
  * Lists (unordered and ordered)
+ 
+== Development
+
+As a Google Apps add-on, this project is written in JavaScript and HTML. The file `app/Code.gs` contains the JavaScript functions; `app/Dialog.html` is the template for calling the conversion functions and displaying the processed output.
+
+=== Testing unpublished code
+
+To safely test the code in your own Google Apps environment, create a new Google Apps project out of these files -- or your modified versions! -- then create and run test deployments using these simple steps.
+
+. Inside a Google Doc, select *Tools > Script editor...*.
+
+* A new tab will open for a blank project, with a `Code.gs` file already started.
+
+. In the new tab, give your project a name, such as `asciidoc-googledocs-addon-test`, and click "Ok".
+
+. Replace the entire body of `Code.gs` with the contents of `app/Code.gs`, and save.
+
+. In the page menu, select *File > New > HTML file*.
+
+. In the *Create* dialog, enter the filename `Dialog.html`, then "Ok".
+
+. Replace the entire body of `Dialog.html` with the contents of `app/Dialog.html`, and save.
+
+. In the page menu, select *Publish > Test as addon*.
+
+. Under "Installation Config", select "Installed and Enabled".
+
+. Click "Select Doc" and choose a Google Doc from your Drive.
+
+. Under "Execute Saved Test", select the radio button to the left of your new test, then click "Test".
+
+* This will open your document in a new tab; your new test addon will be listed under *Add-ons*!
 
 == Help
 
