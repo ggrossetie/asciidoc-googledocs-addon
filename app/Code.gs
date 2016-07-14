@@ -151,12 +151,18 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   var isItalic = text.isItalic(offset);
   var isUnderline = text.isUnderline(offset);
   var isStrikethrough = text.isStrikethrough(offset);
+  var isLink = false;
+  var linkURL = text.getLinkUrl(offset);
   var htmlBuf = ''
   // FIXME: getTextAttributeIndices doesn't split on different fonts,
   // makeing this almost useless
   var isCode = isTextCode(text);
   // Prefix markup
-  if (isUnderline) {
+  if (linkURL !== null) {
+    isLink = true;
+    result = result + new Array(numOccurence).join(linkURL + '[');
+  }
+  if (isUnderline && !isLink) {
     htmlBuf += '<u>'; // or asciidoc.css class: underline
   }
   if (isStrikethrough) {
@@ -178,6 +184,9 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   // Content
   result += distinctContent;
   // Suffix markup
+  if (isLink) {
+    result = result + new Array(numOccurence).join(']');
+  }
   if (isCode) {
     result = result + '+';
   }
@@ -190,7 +199,7 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   if (isStrikethrough) {
     htmlBuf += '</s>';
   }
-  if (isUnderline) {
+  if (isUnderline && !isLink) {
     htmlBuf += '</u>';
   }
   if (htmlBuf !== '') {
