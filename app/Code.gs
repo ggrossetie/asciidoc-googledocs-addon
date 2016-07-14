@@ -66,7 +66,7 @@ function asciidocify() {
       if (isCurrentCode) {
         if (typeof nextChild !== 'undefined' && isTextCode(nextChild.editAsText())) {
           // Start code block
-          asciidoc = asciidoc + '----\n';
+          asciidoc = asciidoc + '\n----\n';
           insideCodeBlock = true;
         }
       }
@@ -77,12 +77,12 @@ function asciidocify() {
         var isNextChildCode = isTextCode(nextChild.editAsText());
         if (!isNextChildCode) {
           // End code block
-          asciidoc = asciidoc + '\n----';
+          asciidoc = asciidoc + '\n----\n';
           insideCodeBlock = false;
         }
       } else {
         // End code block
-        asciidoc = asciidoc + '\n----';
+        asciidoc = asciidoc + '\n----\n';
         insideCodeBlock = false;
       }
     } else {
@@ -227,7 +227,7 @@ function asciidocHandleTitle(child) {
     headingLevel = 7;
   }
   if (typeof headingLevel !== 'undefined') {
-    result = new Array(headingLevel + 1).join('=') + ' ' + child.getText() + '\n';
+    result = '\n[[' + child.getText().toLowerCase().replace(/\s/g,'-') + ']]\n' + new Array(headingLevel + 1).join('=') + ' ' + child.getText() + '\n';
   }
   return result;
 }
