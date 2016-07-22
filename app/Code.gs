@@ -211,23 +211,25 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
 function asciidocHandleTitle(child) {
   var result = '';
   var headingLevel;
-  if (child.getHeading() == DocumentApp.ParagraphHeading.TITLE) {
-    headingLevel = 1;
-  } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING1) {
-    headingLevel = 2;
-  } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING2) {
-    headingLevel = 3;
-  } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING3) {
-    headingLevel = 4;
-  } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING4) {
-    headingLevel = 5;
-  } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING5) {
-    headingLevel = 6;
-  } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING6) {
-    headingLevel = 7;
-  }
-  if (typeof headingLevel !== 'undefined') {
-    result = new Array(headingLevel + 1).join('=') + ' ' + child.getText() + '\n';
+  if (child.getText() && child.getText().trim() !== '') {
+    if (child.getHeading() == DocumentApp.ParagraphHeading.TITLE) {
+      headingLevel = 1;
+    } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING1) {
+      headingLevel = 2;
+    } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING2) {
+      headingLevel = 3;
+    } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING3) {
+      headingLevel = 4;
+    } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING4) {
+      headingLevel = 5;
+    } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING5) {
+      headingLevel = 6;
+    } else if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING6) {
+      headingLevel = 7;
+    }
+    if (typeof headingLevel !== 'undefined') {
+      result = new Array(headingLevel + 1).join('=') + ' ' + child.getText() + '\n';
+    }
   }
   return result;
 }
