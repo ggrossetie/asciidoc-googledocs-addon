@@ -87,6 +87,13 @@ function asciidocify() {
       }
     } else {
       asciidoc = asciidoc + asciidocHandleChild(child, i, nextChild);
+      if (typeof nextChild !== 'undefined'
+          && child.getType() != DocumentApp.ElementType.LIST_ITEM
+          && nextChild.getType() == DocumentApp.ElementType.LIST_ITEM
+          && asciidoc.slice(-1) !== '\n') {
+        // Force blank line above lists
+        asciidoc = asciidoc + '\n';
+      }
     }
     asciidoc = asciidoc + '\n';
   }
