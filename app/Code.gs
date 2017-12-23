@@ -158,6 +158,8 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   var isItalic = text.isItalic(offset);
   var isUnderline = text.isUnderline(offset);
   var isStrikethrough = text.isStrikethrough(offset);
+  var isSuperscript = text.getTextAlignment(offset) == DocumentApp.TextAlignment.SUPERSCRIPT;
+  var isSubscript = text.getTextAlignment(offset) == DocumentApp.TextAlignment.SUBSCRIPT;
   var isLink = false;
   var linkURL = text.getLinkUrl(offset);
   var htmlBuf = ''
@@ -178,6 +180,12 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   if (htmlBuf !== '') {
     result += '+++' + htmlBuf + '+++';
     htmlBuf = '';
+  }
+  if (isSuperscript) {
+    result += '^';
+  }
+  if (isSubscript) {
+    result += '~';
   }
   if (isBold) {
     result = result + new Array(numOccurence).join('*');
@@ -202,6 +210,12 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   }
   if (isBold) {
     result = result + new Array(numOccurence).join('*');
+  }
+  if (isSubscript) {
+    result += '~';
+  }
+  if (isSuperscript) {
+    result += '^';
   }
   if (isStrikethrough) {
     htmlBuf += '</s>';
