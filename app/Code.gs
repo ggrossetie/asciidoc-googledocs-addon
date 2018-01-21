@@ -293,7 +293,7 @@ function asciidocHandleList(child) {
     } else {
       listSyntax = new Array(child.getNestingLevel() + 2).join('.');
     }
-    result = ' ' + listSyntax + ' ' + result;
+    result = listSyntax + ' ' + result;
   } else {
     // Should never happen?
     result = child.getText();
