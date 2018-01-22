@@ -1,57 +1,98 @@
 <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css">
 <style>
-.asciidocified-area {
-  width: 100%;
-  height: 470px;
-  max-height: 470px;
-  font-family: monospace;
+@-webkit-keyframes spinAround {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+  }
 }
-.hide {
-  display:none;
+@keyframes spinAround {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+  }
 }
+
 #spinner {
-  height: 19px;
-  width: 19px;
+  animation: spinAround 500ms infinite linear;
+  border: 2px solid #363636;
+  border-radius: 290486px;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  height: 1.5em;
+  width: 1.5em;
+  left: calc(50% - (1em / 2));
+  top: calc(50% - (1em / 2));
+  margin-right: 1em;
 }
-.alert-info {
-  background-color: white;
-  border-color: #BBBBBB;
-  color: #5C5C5C;
+
+#panel {
+  display: flex;
+}
+
+#message {
+  color: #363636;
+  align-self: center;
+}
+
+#asciidoc-text {
+  width: 100%
+}
+
+h2 {
+  color: #363636;
+}
+
+.is-hidden {
+  display: none !important;
 }
 </style>
 
 <div>
-    <div id="progress-panel" class="alert alert-info" role="alert">
-        <img id="spinner" src="https://www.googledrive.com/host/0B1rPjnFlfglqZzk2Qkk3X05fOVk/spinner_tiny.gif"/> <span id="progress-message">Converting...</span> 
-    </div>
-
-    <div>
-        <textarea class="asciidocified-area hide" id="asciidocified-text" rows="20"></textarea>
-    </div>
-    <div id="error-message" class="error-message">&nbsp;</div>
+  <div id="panel" class="block">
+    <div id="spinner"></div>
+    <div id="message">Converting...</div>
+  </div>
+  <div>
+    <textarea class="is-hidden" id="asciidoc-text" rows="20"></textarea>
+  </div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
-</script>
 <script>
-  /**
-   * Runs a server-side function to generate AsciiDoc
-   */
+  // Runs a server-side function to generate AsciiDoc
   function convertAsciiDoc() {
     google.script.run
         .withSuccessHandler(
           function(asciidoc) {
-            $('#asciidocified-text').removeClass('hide');
-            $('#asciidocified-text').val(asciidoc);
-            $('#progress-panel').hide();
+            document.getElementById('spinner').classList.add('is-hidden');
+            var asciidocTextElement = document.getElementById('asciidoc-text');
+            asciidocTextElement.classList.remove('is-hidden');
+            asciidocTextElement.value = asciidoc;
+            var titleElement = document.createElement('h2');
+            titleElement.innerText = 'Result';
+            var messageElement = document.getElementById('message');
+            messageElement.innerText = '';
+            messageElement.appendChild(titleElement);
           })
         .withFailureHandler(
-          function(msg) {
-            $('#progress-panel').removeClass('alert-info');
-            $('#progress-panel').addClass('alert-danger');
-            $('#spinner').hide();
-            $('#progress-message').html('<b>Error!</b><br/>' + msg);
+          function(errorMessage) {
+            document.getElementById('spinner').classList.add('is-hidden');
+            var titleElement = document.createElement('h2');
+            titleElement.innerText = 'Can\'t generate AsciiDoc';
+            var errorMessageElement = document.createElement('div');
+            errorMessageElement.innerText = errorMessage;
+            var messageElement = document.getElementById('message');
+            messageElement.innerText = '';
+            messageElement.appendChild(titleElement);
+            messageElement.appendChild(errorMessageElement);
           })
         .withUserObject(this)
         .asciidocify();
