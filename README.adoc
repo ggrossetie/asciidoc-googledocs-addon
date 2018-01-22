@@ -20,7 +20,7 @@ NOTE: To convert a part of your document, select some text and click *AsciiDoc P
 This Add-on supports the following text formats :
 
  * Headings
- * Bold, italic, underline
+ * Bold, italic, underline, subscript, superscript
  * Tables
  * Code bloc
  * Lists (unordered and ordered)
