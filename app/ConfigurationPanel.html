@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      .is-hidden {
+        display: none !important;
+      }
+
+      body {
+        font-family: 'RobotoDraft', sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .error {
+        color: #dd4b39;
+        font-size: small;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <input type="checkbox" id="extraSpaceAroundListing" value=""><label for="extraSpaceAroundListing">Add an extra space around source listings</label><br/>
+      <input type="checkbox" id="explicitAnchorId" value=""><label for="explicitAnchorId">Generate an explicit anchor id on section titles</label><br/>
+      <br/>
+      <input type="button" id="save" value="Save" />
+    </form>
+    <div id="panel" class="error is-hidden">
+      <div id="message"></div>
+    </div>
+    <script>
+      (function () {
+        google.script.run
+        .withSuccessHandler(loadPreferences)
+        .withFailureHandler(unableToLoadPreferences)
+        .getPreferences();
+
+        document.getElementById('save').onclick = function () {
+          savePrefrencesAndClose();
+        };
+      })();
+
+      /**
+       * Callback function that populates the form with user preferences from the server.
+       *
+       * @param {Object} prefs The saved user preferences.
+       */
+      function loadPreferences(prefs) {
+        if (prefs.extraSpaceAroundListing) {
+          document.getElementById('extraSpaceAroundListing').checked = prefs.extraSpaceAroundListing === 'true';
+        }
+        if (prefs.explicitAnchorId) {
+          document.getElementById('explicitAnchorId').checked = prefs.explicitAnchorId === 'true';
+        }
+      }
+
+      /**
+       * Save user preferences and close this dialog.
+       */
+      function savePrefrencesAndClose() {
+        var prefs = {
+          extraSpaceAroundListing: document.getElementById('extraSpaceAroundListing').checked,
+          explicitAnchorId: document.getElementById('explicitAnchorId').checked,
+        };
+        google.script.run
+          .withSuccessHandler(close)
+          .withFailureHandler(unableToSavePreferences)
+          .savePreferences(prefs);
+      }
+
+      /**
+       * Close this dialog.
+       */
+      function close() {
+        google.script.host.close();
+      }
+
+      /**
+       * Show an error message because we were unable to save user preferences.
+       */
+      function unableToSavePreferences(errorMessage) {
+        showErrorMessage('Unable to save preferences', errorMessage);
+      }
+
+      /**
+       * Show an error message because we were unable to load user preferences.
+       */
+      function unableToLoadPreferences(errorMessage) {
+        showErrorMessage('Unable to load preferences', errorMessage);
+      }
+
+      /**
+       * Show an error message.
+       */
+      function showErrorMessage(title, errorMessage) {
+        document.getElementById('panel').classList.remove('is-hidden');
+        var titleElement = document.createElement('strong');
+        titleElement.innerText = title;
+        var errorMessageElement = document.createElement('div');
+        errorMessageElement.innerText = errorMessage;
+        var messageElement = document.getElementById('message');
+        messageElement.innerText = '';
+        messageElement.appendChild(titleElement);
+        messageElement.appendChild(errorMessageElement);
+      }
+    </script>
+  </body>
+</html>

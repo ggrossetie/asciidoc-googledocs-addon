@@ -5,6 +5,8 @@ function onOpen() {
   DocumentApp.getUi().createAddonMenu()
       .addItem('Convert all', 'showDialogConvertAll')
       .addItem('Convert selection', 'showDialogConvertSelection')
+      .addSeparator()
+      .addItem('Configure converter', 'showDialogConfiguration')
       .addToUi();
 }
 
@@ -25,6 +27,15 @@ function showDialogConvertSelection() {
   showDialog();
 }
 
+function showDialogConfiguration() {
+  var ui = HtmlService.createHtmlOutputFromFile('ConfigurationPanel')
+      .setWidth(400)
+      .setHeight(300)
+      .setTitle('Converter configuration');
+
+  DocumentApp.getUi().showModalDialog(ui, 'Converter configuration');
+}
+
 /**
  * Opens a dialog containing the add-on's user interface.
  */
@@ -35,6 +46,28 @@ function showDialog() {
       .setTitle('AsciiDoc Processor');
 
   DocumentApp.getUi().showModalDialog(ui, 'AsciiDoc Processor');
+}
+
+/**
+ * Gets the stored user preferences for the convert, if they exist.
+ *
+ * @return {Object} The user's preferences, if they exist.
+ */
+function getPreferences() {
+  var userProperties = PropertiesService.getUserProperties();
+  var prefs = {
+    extraSpaceAroundListing: userProperties.getProperty('extraSpaceAroundListing'),
+    explicitAnchorId: userProperties.getProperty('explicitAnchorId')
+  };
+  return prefs;
+}
+
+/**
+ * Saves user preferences for the convert.
+ */
+function savePreferences(prefs) {
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperties(prefs);
 }
 
 function asciidocify() {
