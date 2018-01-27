@@ -1,15 +1,11 @@
-<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
 <style>
-@-webkit-keyframes spinAround {
-  from {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(359deg);
-            transform: rotate(359deg);
-  }
+body {
+  font-family: 'RobotoDraft', sans-serif;
+  margin: 0;
+  padding: 0;
 }
+
 @keyframes spinAround {
   from {
     -webkit-transform: rotate(0deg);
@@ -34,7 +30,7 @@
   margin-right: 1em;
 }
 
-#panel {
+#message-panel {
   display: flex;
 }
 
@@ -47,56 +43,72 @@
   width: 100%
 }
 
-h2 {
-  color: #363636;
-}
-
 .is-hidden {
   display: none !important;
+}
+
+.error {
+  color: #dd4b39;
+  font-size: small;
+  margin-top: 8px;
 }
 </style>
 
 <div>
-  <div id="panel" class="block">
+  <div id="message-panel" class="block">
     <div id="spinner"></div>
     <div id="message">Converting...</div>
   </div>
   <div>
     <textarea class="is-hidden" id="asciidoc-text" rows="20"></textarea>
   </div>
+  <div id="error-panel" class="error is-hidden"></div>
 </div>
 
 <script>
-  // Runs a server-side function to generate AsciiDoc
-  function convertAsciiDoc() {
+  (function () {
+    // Runs a server-side function to generate AsciiDoc
     google.script.run
-        .withSuccessHandler(
-          function(asciidoc) {
-            document.getElementById('spinner').classList.add('is-hidden');
-            var asciidocTextElement = document.getElementById('asciidoc-text');
-            asciidocTextElement.classList.remove('is-hidden');
-            asciidocTextElement.value = asciidoc;
-            var titleElement = document.createElement('h2');
-            titleElement.innerText = 'Result';
-            var messageElement = document.getElementById('message');
-            messageElement.innerText = '';
-            messageElement.appendChild(titleElement);
-          })
-        .withFailureHandler(
-          function(errorMessage) {
-            document.getElementById('spinner').classList.add('is-hidden');
-            var titleElement = document.createElement('h2');
-            titleElement.innerText = 'Can\'t generate AsciiDoc';
-            var errorMessageElement = document.createElement('div');
-            errorMessageElement.innerText = errorMessage;
-            var messageElement = document.getElementById('message');
-            messageElement.innerText = '';
-            messageElement.appendChild(titleElement);
-            messageElement.appendChild(errorMessageElement);
-          })
+        .withSuccessHandler(updateAsciiDocTextArea)
+        .withFailureHandler(unableToGenerateAsciiDoc)
         .withUserObject(this)
         .asciidocify();
+  })();
+
+  /**
+   * Update the text area with the generated AsciiDoc.
+   */
+  function updateAsciiDocTextArea(asciidoc) {
+    document.getElementById('spinner').classList.add('is-hidden');
+    var asciidocTextElement = document.getElementById('asciidoc-text');
+    asciidocTextElement.classList.remove('is-hidden');
+    asciidocTextElement.value = asciidoc;
+    var titleElement = document.createElement('h2');
+    titleElement.innerText = 'Result';
+    var messageElement = document.getElementById('message');
+    messageElement.innerText = '';
+    messageElement.appendChild(titleElement);
   }
 
-  convertAsciiDoc();
+  /**
+   * Show an error message because we were unable to generate AsciiDoc.
+   */
+  function unableToGenerateAsciiDoc(errorMessage) {
+    showErrorMessage('Unable to generate AsciiDoc', errorMessage);
+  }
+
+  /**
+   * Show an error message.
+   */
+  function showErrorMessage(title, errorMessage) {
+    document.getElementById('message-panel').classList.add('is-hidden');
+    var errorPanelElement = document.getElementById('error-panel')
+    errorPanelElement.classList.remove('is-hidden');
+    var titleElement = document.createElement('strong');
+    titleElement.innerText = title;
+    var errorMessageElement = document.createElement('div');
+    errorMessageElement.innerText = errorMessage;
+    errorPanelElement.appendChild(titleElement);
+    errorPanelElement.appendChild(errorMessageElement);
+  }
 </script>
