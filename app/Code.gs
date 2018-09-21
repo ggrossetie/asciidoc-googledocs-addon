@@ -163,8 +163,6 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   var isLink = false;
   var linkURL = text.getLinkUrl(offset);
   var htmlBuf = ''
-  // FIXME: getTextAttributeIndices doesn't split on different fonts,
-  // making this almost useless
   var isCode = isTextCode(text, offset);
   // Prefix markup
   if (linkURL !== null) {
