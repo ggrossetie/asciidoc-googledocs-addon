@@ -164,8 +164,8 @@ function asciidocHandleFontStyle(text, offset, distinctContent) {
   var linkURL = text.getLinkUrl(offset);
   var htmlBuf = ''
   // FIXME: getTextAttributeIndices doesn't split on different fonts,
-  // makeing this almost useless
-  var isCode = isTextCode(text);
+  // making this almost useless
+  var isCode = isTextCode(text, offset);
   // Prefix markup
   if (linkURL !== null) {
     isLink = true;
@@ -302,10 +302,15 @@ function asciidocHandleList(child) {
 }
 
 /** Guess if the text is code by looking at the font family. */
-function isTextCode(text) {
-  // Things will be better if Google Fonts can tell us about a font
-  var i, fontFamily = text.getFontFamily(), /* Now it returns a string! */
-  monospaceFonts = ['Consolas', 'Courier New', 'Source Code Pro'];
+function isTextCode(text, offset) {
+  var fontFamily;
+  if (offset) {
+    fontFamily = text.getFontFamily(offset); /* Now it returns a string! */
+  } else {
+    fontFamily = text.getFontFamily(); /* Now it returns a string! */
+  }
+  // Things could be better if Google Fonts can tell us about a font
+  var i, monospaceFonts = ['Consolas', 'Courier New', 'Source Code Pro'];
   if (fontFamily === null) {
     return false; // Handle null early.. It means multiple values.
   }
