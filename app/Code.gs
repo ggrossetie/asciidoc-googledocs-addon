@@ -107,6 +107,18 @@ function isEmptyText(child) {
 function asciidocHandleChild(child, i, nextChild) {
   var result = '';
   if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
+    var numChildren = child.getNumChildren();
+    for (var childIndex = 0; childIndex < numChildren; childIndex++) {
+      var paragraphChild = child.getChild(childIndex);
+      if (paragraphChild.getType() == DocumentApp.ElementType.INLINE_IMAGE) {
+        result = result + asciidocHandleImage(paragraphChild);
+      }
+    }
+    var positionedImages = child.getPositionedImages();
+    for (var positionedImagesIndex in positionedImages) {
+      var image = positionedImages[positionedImagesIndex];
+      result = result + asciidocHandleImage(image)
+    }
     result = result + asciidocHandleTitle(child);
     result = result + asciidocHandleText(child);
     if (child.getHeading() == DocumentApp.ParagraphHeading.NORMAL
@@ -125,6 +137,13 @@ function asciidocHandleChild(child, i, nextChild) {
     result = result + asciidocHandleTable(child);
   } else if (child.getType() == DocumentApp.ElementType.LIST_ITEM) {
     result = result + asciidocHandleList(child);
+    var positionedImages = child.getPositionedImages();
+    for (var positionedImagesIndex in positionedImages) {
+      var image = positionedImages[positionedImagesIndex];
+      result = result + asciidocHandleImage(image)
+    }
+  } else if (child.getType() == DocumentApp.ElementType.INLINE_IMAGE) {
+    result = result + asciidocHandleImage(child);
   } else {
     result = result + child.getText();
   }
@@ -297,6 +316,12 @@ function asciidocHandleList(child) {
     result = child.getText();
   }
   return result;
+}
+
+function asciidocHandleImage(image) {
+  var contentType = image.getBlob().getContentType();
+  var base64 = Utilities.base64Encode(image.getBlob().getBytes()); 
+  return '\nimage::data:' + contentType + ';base64,' + base64 + '[]\n'; 
 }
 
 /** Guess if the text is code by looking at the font family. */
