@@ -1,4 +1,8 @@
 /**
+ * @OnlyCurrentDoc  Limits the script to only accessing the current document.
+ */
+
+/**
  * Creates a menu entry in the Google Docs UI when the document is opened.
  */
 function onOpen() {
