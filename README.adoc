@@ -1,14 +1,14 @@
 = AsciiDoc Processor Add-on for Google Docs&trade;
 Guillaume Grossetie
-:webstore: https://chrome.google.com/webstore/detail/asciidoc-processor/eghlmnhjljbjodpeehjjcgfcjegcfbhk
+:webstore: https://gsuite.google.com/marketplace/app/asciidoc_processor/1023004302050
 
 Convert your Google Docs&trade; into AsciiDoc.
 
-image::https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_206x58.png[link="{webstore}"]
+image::https://ssl.gstatic.com/apps/additnow/images/hedgehog_light_logo_1x.png[link="{webstore}"]
 
 == Usage
 
- 1. Install extension from {webstore}[Chrome Web Store]
+ 1. Install extension from {webstore}[Google Workspace Marketplace]
  1. Open a document or create a new one
  1. Under the *Add-ons* menu, click *AsciiDoc Processor > Convert all* to convert the entire document into AsciiDoc.
  1. Copy and paste the AsciiDoc output anywhere you want!
